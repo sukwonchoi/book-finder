@@ -75,13 +75,6 @@ class App extends Component<{}, State> {
     this.setState({ searchTerm: event.target.value });
   };
 
-  _onSearch = () => {
-    const searchTerm = this.state.searchTerm;
-    if (searchTerm) {
-      this._getBooks(searchTerm);
-    }
-  };
-
   _getBooks = (searchTerm: string): Observable<GetBooksResponse> => {
     return Observable.create((observer: Observer<GetBooksResponse>) => {
       fetch(`https://www.googleapis.com/books/v1/volumes?q=${searchTerm}`)
