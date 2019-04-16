@@ -10,6 +10,12 @@ An application that will allow users to search for books by entering a query (Ti
 - [x] User can see the list of books appearing on the page
 
 ## Bonus Features
-- [ ] For each item in the list add a link that will send the User to an external site which has more information about the book
-- [ ] Implement a Responsive Design
+- [x] For each item in the list add a link that will send the User to an external site which has more information about the book
+- [x] Implement a Responsive Design
 - [x] Add loading animations
+- [x] Search while the user types with debounce
+
+## TODO
+- [ ] Write tests
+- [ ] Fix up styling and display more information about the book
+- [ ] Deploy
