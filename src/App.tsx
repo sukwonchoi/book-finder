@@ -1,14 +1,13 @@
 import React, { Component } from "react";
-import { Subject, Observable, from, Observer } from "rxjs";
+import { Subject, Observable, Observer } from "rxjs";
 import { takeUntil, debounceTime, map, switchMap, filter, tap } from "rxjs/operators";
 import BookDetailsCard from "./components/BookDetailsCard";
 import { BookDetails, GetBooksResponse } from "./models/books.model";
+import { LinearProgress, Typography } from "@material-ui/core";
 
 import Header from "./components/Header";
 
 import "./App.scss";
-import { LinearProgress, Typography } from "@material-ui/core";
-
 type LoadingState = "initial" | "loading" | "success" | "failure";
 
 type State = typeof initialState;
@@ -28,16 +27,18 @@ class App extends Component<{}, State> {
     this.onSearchInputChange$
       .pipe(
         debounceTime(250),
-        filter(searchTerm => searchTerm !== ''),
+        filter(searchTerm => searchTerm !== ""),
         takeUntil(this.onDestroy$),
-        tap(() => this.setState({loadingState: 'loading'})),
-        switchMap(searchTerm => this._getBooks(searchTerm).pipe(map(response => ({ books: response.items }))))
+        tap(() => this.setState({ loadingState: "loading" })),
+        switchMap(searchTerm => this._getBooks(searchTerm)
+          .pipe(map(response => response.items))
+        )
       )
-      .subscribe(a => {
+      .subscribe(books => {
         this.setState({
-          loadingState: 'success',
-          books: a.books || null
-        })
+          loadingState: "success",
+          books: books || null
+        });
       });
   }
 
@@ -48,23 +49,20 @@ class App extends Component<{}, State> {
   render() {
     const { books, loadingState } = this.state;
     return (
-      <div className="App">
-        <Header value={this.state.searchTerm} onChange={this._onSearchInputChange} />
-        { loadingState === 'loading' && <LinearProgress style={{ marginTop: 64 }} color="secondary" />}
-        <div style={{top: 68, position: 'absolute'}}>
-          <div className="contents">
-            <div style={{ display: "flex", justifyContent: 'center', maxWidth: 1000, margin: 'auto', flexWrap: "wrap" }}>
-              {!!books && books.map(book => (
-                <BookDetailsCard key={book.id} bookDetails={book} />
-              ))}
-            </div>
+      <div className="app">
+        <div className="app-headerContainer">
+          <Header value={this.state.searchTerm} onChange={this._onSearchInputChange} />
+          {loadingState === "loading" && <LinearProgress className="app-linearProgress" color="secondary" />}
+        </div>
+        <div className="app-container">
+          <div className="app-bookList">
+            {!!books && books.map(book => <BookDetailsCard key={book.id} bookDetails={book} />)}
           </div>
-
-          {
-            loadingState === 'initial' && (
-              <Typography component="h3" variant="h3">Search for a book title</Typography>
-            )
-          }
+          {loadingState === "initial" && (
+            <Typography component="h2" variant="display2">
+              Search for a book title
+            </Typography>
+          )}
         </div>
       </div>
     );

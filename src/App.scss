@@ -1,21 +1,24 @@
-.App {
+.app {
   text-align: center;
 }
 
-.contents {
+.app-headerContainer {
+  height: 68px;
+}
+
+.app-linearProgress {
+  top: 64px;
+}
+
+.app-container {
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
 }
 
-.App-link {
-  color: #61dafb;
-}
-
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.app-bookList {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  width: 750px;
+  margin: auto;
 }
