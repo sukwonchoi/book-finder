@@ -1,13 +1,12 @@
-import React, { MouseEventHandler } from "react";
-import { Typography, AppBar, Toolbar, InputBase, withStyles } from "@material-ui/core";
-import { Search as SearchIcon } from "@material-ui/icons";
+import React from 'react';
+import { Typography, AppBar, Toolbar, InputBase, withStyles } from '@material-ui/core';
+import { Search as SearchIcon } from '@material-ui/icons';
 
-import { styles } from "./Header.theme";
-import { WithStylesOptions } from "@material-ui/core/styles/withStyles";
+import { styles } from './Header.theme';
 
 type Props = {
   onChange?: React.ChangeEventHandler<HTMLTextAreaElement | HTMLInputElement>;
-  value? : string;
+  value?: string;
   classes: any;
 };
 
