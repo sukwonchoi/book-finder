@@ -1,81 +1,43 @@
-import React, { Component } from "react";
-import { Subject, Observable, Observer } from "rxjs";
-import { takeUntil, debounceTime, map, switchMap, filter, tap } from "rxjs/operators";
-import BookDetailsCard from "./components/BookDetailsCard";
-import { BookDetails, GetBooksResponse } from "./models/books.model";
-import { LinearProgress, Typography } from "@material-ui/core";
+import React, { useState, useEffect } from 'react';
+import { Subject, Observable, Observer } from 'rxjs';
+import { debounceTime, map, switchMap, filter, tap } from 'rxjs/operators';
+import BookDetailsCard from './components/BookDetailsCard';
+import { BookDetails, GetBooksResponse } from './models/books.model';
+import { LinearProgress, Typography } from '@material-ui/core';
 
-import Header from "./components/Header";
+import Header from './components/Header';
 
-import "./App.scss";
-type LoadingState = "initial" | "loading" | "success" | "failure";
+import './App.scss';
 
-type State = typeof initialState;
-const initialState = {
-  books: null as null | ReadonlyArray<BookDetails>,
-  loadingState: "initial" as LoadingState,
-  searchTerm: ""
-};
+type LoadingState = 'initial' | 'loading' | 'success' | 'failure';
 
-class App extends Component<{}, State> {
-  state = initialState;
+const App = () => {
+  const [books, setBooks] = useState<null | ReadonlyArray<BookDetails>>(null);
+  const [loadingState, setLoadingState] = useState<LoadingState>('initial');
+  const [searchTerm, setSearchTerm] = useState('');
+  const [onSearchInputChanges$] = useState(new Subject<string>());
 
-  onSearchInputChange$ = new Subject<string>();
-  onDestroy$ = new Subject();
-
-  componentWillMount() {
-    this.onSearchInputChange$
+  useEffect(() => {
+    const subscription = onSearchInputChanges$
       .pipe(
         debounceTime(250),
-        filter(searchTerm => searchTerm !== ""),
-        takeUntil(this.onDestroy$),
-        tap(() => this.setState({ loadingState: "loading" })),
-        switchMap(searchTerm => this._getBooks(searchTerm)
-          .pipe(map(response => response.items))
-        )
+        filter(searchTerm => searchTerm !== ''),
+        tap(() => setLoadingState('loading')),
+        switchMap(searchTerm => getBooks(searchTerm).pipe(map(response => response.items)))
       )
       .subscribe(books => {
-        this.setState({
-          loadingState: "success",
-          books: books || null
-        });
+        setLoadingState('success');
+        setBooks(books || null);
       });
-  }
+    return () => subscription.unsubscribe();
+  }, []);
 
-  componentWillUnmount() {
-    this.onDestroy$.next();
-  }
-
-  render() {
-    const { books, loadingState } = this.state;
-    return (
-      <div className="app">
-        <div className="app-headerContainer">
-          <Header value={this.state.searchTerm} onChange={this._onSearchInputChange} />
-          {loadingState === "loading" && <LinearProgress className="app-linearProgress" color="secondary" />}
-        </div>
-        <div className="app-container">
-          <div className="app-bookList">
-            {!!books && books.map(book => <BookDetailsCard key={book.id} bookDetails={book} />)}
-          </div>
-          {loadingState === "initial" && (
-            <div className="app-searchLabelContainer">
-              <Typography component="h2" variant="display2">
-                Search for a book title
-              </Typography>
-            </div>
-          )}
-        </div>
-      </div>
-    );
-  }
-
-  _onSearchInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    this.onSearchInputChange$.next(event.target.value);
-    this.setState({ searchTerm: event.target.value });
+  const onSearchInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    onSearchInputChanges$.next(event.target.value);
+    setSearchTerm(event.target.value);
   };
 
-  _getBooks = (searchTerm: string): Observable<GetBooksResponse> => {
+  const getBooks = (searchTerm: string): Observable<GetBooksResponse> => {
     return Observable.create((observer: Observer<GetBooksResponse>) => {
       fetch(`https://www.googleapis.com/books/v1/volumes?q=${searchTerm}`)
         .then(response => response.json())
@@ -86,6 +48,27 @@ class App extends Component<{}, State> {
         .catch(err => observer.error(err));
     });
   };
-}
+
+  return (
+    <div className="app">
+      <div className="app-headerContainer">
+        <Header value={searchTerm} onChange={onSearchInputChange} />
+        {loadingState === 'loading' && <LinearProgress className="app-linearProgress" color="secondary" />}
+      </div>
+      <div className="app-container">
+        <div className="app-bookList">
+          {!!books && books.map(book => <BookDetailsCard key={book.id} bookDetails={book} />)}
+        </div>
+        {loadingState === 'initial' && (
+          <div className="app-searchLabelContainer">
+            <Typography component="h2" variant="display2">
+              Search for a book title
+            </Typography>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
 
 export default App;
