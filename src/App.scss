@@ -19,6 +19,13 @@
   display: flex;
   flex-direction: column;
   justify-content: center;
-  width: 750px;
+  max-width: 750px;
   margin: auto;
+}
+
+.app-searchLabelContainer {
+  display: flex;
+  justify-content: center;
+  padding-top: 32px;
+  height: calc(100vh - 68px);
 }

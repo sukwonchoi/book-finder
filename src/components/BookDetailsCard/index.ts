@@ -1,2 +1,2 @@
-export { default } from "./BookDetailsCard";
-export * from "./BookDetailsCard";
+export { default } from './BookDetailsCard';
+export * from './BookDetailsCard';

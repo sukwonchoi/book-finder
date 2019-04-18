@@ -59,9 +59,11 @@ class App extends Component<{}, State> {
             {!!books && books.map(book => <BookDetailsCard key={book.id} bookDetails={book} />)}
           </div>
           {loadingState === "initial" && (
-            <Typography component="h2" variant="display2">
-              Search for a book title
-            </Typography>
+            <div className="app-searchLabelContainer">
+              <Typography component="h2" variant="display2">
+                Search for a book title
+              </Typography>
+            </div>
           )}
         </div>
       </div>
