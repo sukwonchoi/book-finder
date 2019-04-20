@@ -27,6 +27,5 @@ $ npm start
 - [x] Search while the user types with debounce
 
 ## TODO
-- [ ] Write tests
 - [ ] Fix up styling and display more information about the book
 - [ ] Deploy
